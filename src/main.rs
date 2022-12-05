@@ -1,54 +1,60 @@
 #![allow(unused)]
-//use shuffle::shuffler;
-use rand::Rng;
-use rand::thread_rng;
-use rand::seq::SliceRandom;
 
+use std::array;
+use rand::seq::SliceRandom;
+// Globals are declared outside all other scopes.
 static ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz";
 
+fn main() {
 
-fn main(){
     let enigma_key = enigma_key_generation();
-    let mut rotor_1 : String  = enigma_key[0].clone();
+/*    let mut rotor_1 : String  = enigma_key[0].clone();
     let mut rotor_2 : String  = enigma_key[1].clone();
     let mut rotor_3 : String  = enigma_key[2].clone();
+ */
+    let mut rotor_1 : String  = String::from("sfnzuyjblohtqawdirpgvkxcme"); 
+    let mut rotor_2 : String  = String::from("sqinotpjfhbzleadmwygvxurck"); 
+    let mut rotor_3 : String  = String::from("qmjypuzcwlnixoeksvrfbthdga"); 
 
-    println!("the first rotor {}", rotor_1);
 
-    for i in 0..3{
-        println!(" {}: {}", i , enigma_key[i]);
+    let message = String::from("hihiqmjypuzcwlnpjfhbzleixoeksvrfbthdga");    
+    let mut status : usize = 0;
+
+    let mut ciphertext: String= String::from("");
+    for ch in message.chars(){
+        let mut ch_1 = rotor_1.chars().nth(index_in_string(ch, ALPHABET)).unwrap();
+        let mut ch_2 = rotor_2.chars().nth(index_in_string(ch_1, ALPHABET)).unwrap();
+        let mut ch_3 = rotor_3.chars().nth(index_in_string(ch_2, ALPHABET)).unwrap();
+        let reflected_char =reflector(ch_3);
+        ch_3 = ALPHABET.chars().nth(index_in_string(reflected_char, &rotor_3)).unwrap();
+        ch_2 = ALPHABET.chars().nth(index_in_string(ch_3, &rotor_2)).unwrap();
+        ch_1 = ALPHABET.chars().nth(index_in_string(ch_2, &rotor_1)).unwrap();
+        ciphertext.push(ch_1);
+        status += 1;
+        rotor_1 = rotate(&rotor_1);
+        if status%26 ==0 {
+            rotor_2 = rotate(&rotor_2);
+        }
+        if status%(26*26) ==0 {
+            rotor_3 = rotate(&rotor_3);
+        }
     }
+    println!(" ciphertext is {}", ciphertext);
+
+   
+    
+}
+fn rotate(temp_str: &str) -> String {
+    let mut str_vec: Vec<char> = temp_str.chars().collect();
+    str_vec.rotate_left(1);
+    str_vec.iter().collect()
 }
 
-fn encryption(key:[String;3], message : &str) -> String{
-    let status :usize =0;
-    let l :usize = message.len();
-
-    for i in 0..l{
-
-
-    }
 
 
 
-}
 
-fn reflector(ch: char) -> char{
-    let mut reflected_char : char = ' ';
-    let a = index_in_string(ch, ALPHABET);
-    reflected_char = ALPHABET.chars().nth(26 - a - 1).unwrap();
-    return reflected_char;
-}
-fn index_in_string(ch: char, my_string: &str ) -> usize
-{
-    let mut result_char : char = ' ';
-    let a = match my_string.find(ch) {
-        Some(i) => i,
-        None => 27
-    };
-    let index = usize::try_from(a).unwrap();
-    return index;
-}
+
 fn enigma_key_generation() -> [String;3] {
     println!(" this is my key");
     let mut key : [String;3] = Default::default();
@@ -59,5 +65,24 @@ fn enigma_key_generation() -> [String;3] {
         let r = String::from_utf8(bytes).unwrap();
         key[i] = r;
     }
+    
     return key;
+    }
+
+fn reflector(ch: char) -> char{
+    let mut reflected_char : char = ' ';
+    let a = index_in_string(ch, ALPHABET );
+    reflected_char = ALPHABET.chars().nth(26 - a - 1).unwrap();
+    return reflected_char;
 }
+fn index_in_string(ch: char, my_string: &str ) -> usize
+{
+    let mut result_char : char = ' ';
+        let a = match my_string.find(ch) {
+            Some(i) => i,
+            None => 27
+            };
+        let index = usize::try_from(a).unwrap();
+        return index;
+        }
+    
