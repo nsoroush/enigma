@@ -6,13 +6,13 @@ static ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz";
 
 fn main() {
     let enigma_key = enigma_key_generation();
-    println!("Please enter your message!");
     let input = get_input(String::from("Please enter your message!"));
     let message = input.trim();
     println!("{}", message);
     let ciphertext: String= enigma(enigma_key,&message);
     println!(" Enigma ciphertext is:  {}", ciphertext);
 }
+
 fn enigma(key: [String;3], plaintext: &str) -> String{
     let mut rotor_1 : String  = key[0].clone();
     let mut rotor_2 : String  = key[1].clone();
@@ -37,7 +37,6 @@ fn enigma(key: [String;3], plaintext: &str) -> String{
             rotor_3 = rotate(&rotor_3);
         }
     }
-    //println!(" ciphertext is {}", ciphertext);
     return ciphertext;
 }
 
@@ -48,7 +47,6 @@ fn rotate(temp_str: &str) -> String {
 }
 
 fn enigma_key_generation() -> [String;3] {
-    //println!(" this is my key");
     let mut key : [String;3] = Default::default();
     for i in 0..3{
         let mut njm_rng = rand::thread_rng();
@@ -69,7 +67,7 @@ fn reflector(ch: char) -> char{
 }
 fn index_in_string(ch: char, my_string: &str ) -> usize
 {
-    //let result_char : char = ' ';
+   // let mut result_char : char = ' ';
     let a = match my_string.find(ch) {
         Some(i) => i,
         None => 27
