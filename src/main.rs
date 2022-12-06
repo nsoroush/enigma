@@ -1,27 +1,25 @@
-#![allow(unused)]
-
+use std::io;
 use std::array;
 use rand::seq::SliceRandom;
-// Globals are declared outside all other scopes.
+
 static ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz";
 
 fn main() {
-
     let enigma_key = enigma_key_generation();
-/*    let mut rotor_1 : String  = enigma_key[0].clone();
-    let mut rotor_2 : String  = enigma_key[1].clone();
-    let mut rotor_3 : String  = enigma_key[2].clone();
- */
-    let mut rotor_1 : String  = String::from("sfnzuyjblohtqawdirpgvkxcme"); 
-    let mut rotor_2 : String  = String::from("sqinotpjfhbzleadmwygvxurck"); 
-    let mut rotor_3 : String  = String::from("qmjypuzcwlnixoeksvrfbthdga"); 
-
-
-    let message = String::from("hihiqmjypuzcwlnpjfhbzleixoeksvrfbthdga");    
+    println!("Please enter your message!");
+    let mut input = get_input(String::from("Please enter your message!"));
+    let mut message = input.trim();
+    println!("{}", message);
+    let mut ciphertext: String= enigma(enigma_key,&message);
+    println!(" Enigma ciphertext is:  {}", ciphertext);
+}
+fn enigma(key: [String;3], plaintext: &str) -> String{
+    let mut rotor_1 : String  = key[0].clone();
+    let mut rotor_2 : String  = key[1].clone();
+    let mut rotor_3 : String  = key[2].clone();
     let mut status : usize = 0;
-
     let mut ciphertext: String= String::from("");
-    for ch in message.chars(){
+    for ch in plaintext.chars(){
         let mut ch_1 = rotor_1.chars().nth(index_in_string(ch, ALPHABET)).unwrap();
         let mut ch_2 = rotor_2.chars().nth(index_in_string(ch_1, ALPHABET)).unwrap();
         let mut ch_3 = rotor_3.chars().nth(index_in_string(ch_2, ALPHABET)).unwrap();
@@ -39,24 +37,18 @@ fn main() {
             rotor_3 = rotate(&rotor_3);
         }
     }
-    println!(" ciphertext is {}", ciphertext);
-
-   
-    
+    //println!(" ciphertext is {}", ciphertext);
+    return ciphertext;
 }
+
 fn rotate(temp_str: &str) -> String {
     let mut str_vec: Vec<char> = temp_str.chars().collect();
     str_vec.rotate_left(1);
     str_vec.iter().collect()
 }
 
-
-
-
-
-
 fn enigma_key_generation() -> [String;3] {
-    println!(" this is my key");
+    //println!(" this is my key");
     let mut key : [String;3] = Default::default();
     for i in 0..3{
         let mut njm_rng = rand::thread_rng();
@@ -85,4 +77,12 @@ fn index_in_string(ch: char, my_string: &str ) -> usize
         let index = usize::try_from(a).unwrap();
         return index;
         }
-    
+
+fn get_input(message_to_user: String)-> String{
+    println!("{:?}", message_to_user);
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("error: unable to read user input");
+    return input;
+}
+
+
